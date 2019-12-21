@@ -19,9 +19,12 @@ changevaluesum=0
 #define list to hold monthly changes
 monthlychangelist=[]
 monthlychangepermonthlist=[]
+#define summary report list
+summaryreportlist=[]
 
-
-
+#out put file
+result_list = []
+election_results_file = os.path.join('../Resources/Budget_Results_Report.txt')
 
 #set path to excel file
 budgetcsvpath = os.path.join('..', 'Resources', 'budget_data.csv')
@@ -32,7 +35,7 @@ with open(budgetcsvpath) as csvfile:
 # CSV reader specifies delimiter and variable that holds contents
     csvreader = csv.reader(csvfile, delimiter=',')
 
-    print(csvreader)
+    #print(csvreader)
  # Read the header row first (skip this step if there is now header)
     csv_header = next(csvreader)
     #print(f"CSV Header: {csv_header}")
@@ -69,35 +72,44 @@ with open(budgetcsvpath) as csvfile:
     #sum 
     
     changevaluesum=sum(monthlychangelist)
+
+    #The average of the changes in "Profit/Losses" over the entire period
     Avgchange=changevaluesum/(total_month-1)
+
     #print(monthlychangepermonthlist)
         
-
-    print("Financial Analysis")  
-    print("------------------------")   
-    print("Total Months: "+str(total_month)) 
+    #Create Summary report
+    summaryreportlist.append("Financial Analysis")  
+    summaryreportlist.append("------------------------")   
+    summaryreportlist.append("Total Months: "+str(total_month)) 
     #print("Average  Change: $"+str(Avgchange)) 
-    print("Average  Change: $""{0:.2f}".format(Avgchange)) 
+    summaryreportlist.append("Average  Change: $""{0:.2f}".format(Avgchange)) 
     #print("{0:.2f}".format(Avgchange))
   
     #print("Total Months: {total_month}".format(total_month=total_month))
-    print("Total: $ "+str(total))
+   # print("Total: $ "+str(total))
     for row in monthlychangepermonthlist:
-        if row['change']== greatestchange:
-            print("Greatest Increase in Profits: "+ row['month']+" ($" + str(row['change'])+")")
-    for row in monthlychangepermonthlist:
-        if row['change']== leastchange:
-            print("Greatest Decrease in Profits: "+ row['month']+" ($" + str(row['change'])+")")
-
-
-    #print(greatestchange)
-
-    #print(leastchange)
-
-    #The average of the changes in "Profit/Losses" over the entire period
-
-
+        
     #The greatest increase in profits (date and amount) over the entire period
+        if row['change']== greatestchange:
+            summaryreportlist.append("Greatest Increase in Profits: "+ row['month']+" ($" + str(row['change'])+")")
+    for row in monthlychangepermonthlist:
+          #The greatest decrease in losses (date and amount) over the entire period
+        if row['change']== leastchange:
+            summaryreportlist.append("Greatest Decrease in Profits: "+ row['month']+" ($" + str(row['change'])+")")
 
 
-    #The greatest decrease in losses (date and amount) over the entire period
+# Print output of election results
+with open(file=election_results_file, mode='w') as write_results:
+    for election_results in summaryreportlist:
+        # Print to terminal
+        print(election_results)
+        # Write to file
+        write_results.write("{item}\n".format(item=election_results))
+
+
+
+
+
+
+  
